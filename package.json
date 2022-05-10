@@ -5,5 +5,23 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
-  }
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server"
+  },
+  "name": "rateyourprof-backend",
+  "version": "1.0.0",
+  "description": "Backend for RateYourProf Webapp",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Compiiiii/RateYourProf-Backend.git"
+  },
+  "author": "Compiiiii",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Compiiiii/RateYourProf-Backend/issues"
+  },
+  "homepage": "https://github.com/Compiiiii/RateYourProf-Backend#readme"
 }
