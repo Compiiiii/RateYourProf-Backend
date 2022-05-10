@@ -7,7 +7,7 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 ## API Calls
 
-#### /user
+### /user
 
 **/user/login**
 - ***Send*** HTTP Post Request
