@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const express = require("express");
 const config = require("./config");
-const User = require("./Models/userModel");
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -20,4 +19,6 @@ mongoose.connect(dbURI)
 })
 .catch((err) => console.log("Could not connect to MongoDB: \n" + err));
 
+//Use Express Router 
 app.use("/users", require("./Routes/userRoute"));
+app.use("/ratings", require("./Routes/ratingRoute"));

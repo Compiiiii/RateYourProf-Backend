@@ -7,17 +7,140 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 ## API Calls
 
-**/user/login**
-- ***Send*** HTTP Post Request
-- ***Send*** JSON as Body with Elements "email" and "password"
-- ***Receive*** Status Code 200 no matter whether successful authentication or not
-- ***Receive*** Status Code 400 if not all of the required JSON values are not sent
-- ***Receive*** JSON as Body with Element "authenticated" set to true or false
+---
 
-**/user/create**
-- ***Send*** HTTP Post Request
-- ***Send*** JSON as Body with Elements "email", "password" and "name"
-- ***Receive*** Status Code 201 if added successfully
-- ***Receive*** Status Code 200 if "email" or "name" already exist
-- ***Receive*** JSON as Body with Element "exists" set to the already existing JSON value, i.e. "exists": "email"
-- ***Receive*** Status Code 400 if not all of the required JSON values are not sent
+### **/users/login**
+ 
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:* 
+
+    {
+        "email": String,
+        "password": String
+    }
+
+### ***Response:***
+
+#### *Status-Code:* 
+- 400 if not all required JSON keys are sent or have the wrong type
+- 200 in any other case
+
+#### *Body:*
+    {
+        "authenticated": Boolean
+    }
+
+---
+
+### **/users/create**
+
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:* 
+
+    {
+        "email": String,
+        "password": String,
+        "forename": String,
+        "surname": String
+    }
+
+### ***Response:***
+
+#### *Status-Code:* 
+
+- 400 if not all required JSON keys are sent or have the wrong type
+- 200 if "email" already exists
+- 201 if added successfully
+
+---
+
+### **/users/profs**
+ 
+### ***Request:***
+
+#### *HTTP-Method:* Get
+
+### ***Response:***
+
+#### *Status-Code:* 200
+
+#### *Body:*
+    [
+        {
+            "_id": String,  //Can be ignored
+            "forename": String,
+            "surname": String,
+            "title": String,
+            "id": Integer
+        },
+        {
+            And so on...
+            The Array-Size equals the number of professors
+        }
+    ]
+
+---
+
+### **/ratings/create**
+
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:* 
+
+    {
+        "prof": Integer,
+        "module": Integer,
+        "stars": {
+            "Tempo": Integer(Range 1 - 5),
+            "Nachvollziehbarkeit": Integer(Range 1 - 5),
+            "Anschaulichkeit": Integer(Range 1 - 5),
+            "Interaktivität": Integer(Range 1 - 5)
+        },
+        //The following are optional. However, either all of them or none of them must be sent.
+        "title": String(Range 1-50),
+        "comment": String(Range 1-2000),
+        "anonymous": Boolean
+    }
+
+### ***Response:***
+
+#### *Status-Code:* 
+- 400 if not all required JSON keys are sent, they have the wrong type, are out of Range or Prof/Module dont exist
+- 201 if added successfully
+
+---
+
+### **/users/profile/view**
+ 
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:* 
+
+    {
+        "email": String,
+        "password": String
+    }
+
+### ***Response:***
+
+#### *Status-Code:* 
+- 400 if not all required JSON keys are sent or have the wrong type
+- 200 in any other case
+
+#### *Body:*
+    {
+        "_id": String //Can be ignored
+        "email": String,
+        "forename": String,
+        "surname": String
+    }
