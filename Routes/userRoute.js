@@ -77,6 +77,40 @@ router.get("/profs", (req, res) => {
 
 });
 
+//Get all Modules of one Professor
+router.post("/profs/modules", (req, res) => {
+
+    //Check if Email or Password or Profs are missing or wrong type
+    if(!req.body.email || !req.body.password || !req.body.prof || typeof req.body.email != "string" || typeof req.body.password != "string" || typeof req.body.prof != "number")   
+    return res.status(400).send();
+
+    //Check if Prof is Int
+    if(!Number.isInteger(req.body.prof))    return res.status(400).send();
+
+    //Theoretisch noch Email und Passwort authentifizieren, ist aber egal, da eh noch durch sessions ersetzt wird
+
+    //Search for Prof with that ID
+    User.find({id: req.body.prof})
+    .then(result => {
+
+        //Check if one Prof was found
+        if(result.length != 1)  return res.status(400).send();
+
+        //Map every Array item to an Object with its Name and Array Index
+        const mapped = result[0].modules.map(m => {
+
+            return {name: m, id: result[0].modules.indexOf(m)}
+            
+        });
+
+        res.json(mapped);
+
+    })
+    .catch(err => res.status(500).send(err));
+
+
+})
+
 router.post("/profile/view", (req, res) => {
 
     //Check if Email or Password are missing or wrong type

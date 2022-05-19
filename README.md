@@ -87,6 +87,38 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 ---
 
+### **/users/profs/modules**
+ 
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:*
+   {
+       "email": String,
+       "password": String,
+       "prof": Integer
+   }
+
+### ***Response:***
+
+#### *Status-Code:*
+- 400 if not all required JSON keys are sent, they have the wrong type, or the Prof-ID does not exist
+- 200 in any other case
+
+#### *Body:*
+    [
+        {
+            "name": String,     //Module Name
+            "id": Integer       //Array Index
+        },
+        {
+            ...
+        }
+    ]
+
+---
+
 ### **/ratings/create**
 
 ### ***Request:***
