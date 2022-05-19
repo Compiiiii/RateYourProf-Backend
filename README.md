@@ -94,11 +94,12 @@ You might also need to change the dbURI String in server.js to connect to your o
 #### *HTTP-Method:* Post
 
 #### *Body:*
-   {
-       "email": String,
-       "password": String,
-       "prof": Integer
-   }
+
+    {
+        "email": String,
+        "password": String,
+        "prof": Integer
+    }
 
 ### ***Response:***
 
