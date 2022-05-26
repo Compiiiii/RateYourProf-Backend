@@ -10,30 +10,31 @@ function outOfRange(x, min, max){
 
 //Create Rating Request Handling
 router.post("/create", (req, res) =>{
-
+    
     //Check if the request contains all necessary keys and right types
-    if(!req.body.prof || !req.body.module || !req.body.stars || typeof req.body.prof != "number" || typeof req.body.module != "number" || Array.isArray(req.body.stars) || 
-    typeof req.body.stars != "object")   
+    if(!req.body.stars || typeof req.body.prof != "number" || typeof req.body.module != "number" || Array.isArray(req.body.stars) || typeof req.body.stars != "object")   
     return res.status(400).send();
-
+    
     //Check if the Object contains all necessary keys and right types
     if(!req.body.stars.Tempo || !req.body.stars.Nachvollziehbarkeit || !req.body.stars.Anschaulichkeit || !req.body.stars.Interaktivität || 
     typeof req.body.stars.Tempo != "number" || typeof req.body.stars.Nachvollziehbarkeit != "number" || typeof req.body.stars.Anschaulichkeit != "number" || 
     typeof req.body.stars.Interaktivität != "number")  return res.status(400).send();
-
+    
     //Check if the Numbers in the Object are in the right range
     if(outOfRange(req.body.stars.Tempo, 1, 5) || outOfRange(req.body.stars.Nachvollziehbarkeit, 1, 5) || outOfRange(req.body.stars.Anschaulichkeit, 1, 5) || 
     outOfRange(req.body.stars.Interaktivität, 1, 5))    return res.status(400).send();
-
+    
     //Check if Numbers in the Object are Integers
     if(!Number.isInteger(req.body.stars.Tempo) || !Number.isInteger(req.body.stars.Nachvollziehbarkeit) || !Number.isInteger(req.body.stars.Anschaulichkeit) ||
     !Number.isInteger(req.body.stars.Interaktivität))   return res.status(400).send();
     
     //Check if Module is in Range
-    if(outOfRange(req.body.module, 1, 20))  return res.status(400).send();
-
+    if(outOfRange(req.body.module, 0, 20))  return res.status(400).send();
+    
     //Check if Module and Prof are Integers
     if(!Number.isInteger(req.body.module) || !Number.isInteger(req.body.prof))  return res.status(400).send();
+
+    
 
     //Check if a professor with the given id exists
     User.find({id: req.body.prof})
@@ -44,8 +45,7 @@ router.post("/create", (req, res) =>{
         if(req.body.title || req.body.comment || req.body.anonymous){
             
             //If one of these three is present, all have to be present and they have to be the right type
-            if(!req.body.title || !req.body.comment || typeof req.body.anonymous == undefined || 
-            typeof req.body.title != "string" || typeof req.body.comment != "string" || typeof req.body.anonymous != "boolean") return res.status(400).send();
+            if(!req.body.title || !req.body.comment || typeof req.body.title != "string" || typeof req.body.comment != "string" || typeof req.body.anonymous != "boolean") return res.status(400).send();
             
             //Check if Comment or title are longer than the maximum length
             if(outOfRange(req.body.comment.length, 1, 2000) || outOfRange(req.body.title.length, 1, 50)) return res.status(400).send();
