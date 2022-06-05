@@ -147,6 +147,29 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 ---
 
+### **/users/profile/edit**
+ 
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:* 
+
+    {
+        "email": String,
+        "forename": String,
+        "surname": String,
+        "password": String  //Optional: Only send when password was changed
+    }
+
+### ***Response:***
+
+#### *Status-Code:* 
+- 400 if not all required JSON keys are sent or have the wrong type
+- 200 if the profile was changed successfully
+
+---
+
 ### **/ratings/create**
 
 ### ***Request:***
