@@ -189,8 +189,8 @@ You might also need to change the dbURI String in server.js to connect to your o
             "Corona": Integer(Range 1-5)
         },
         //The following are optional. However, either all of them or none of them must be sent.
-        "title": String(Range 1-50),
-        "comment": String(Range 1-2000),
+        "title": String(Length 1-50),
+        "comment": String(Length 1-2000),
         "anonymous": Boolean
     }
 
@@ -199,3 +199,34 @@ You might also need to change the dbURI String in server.js to connect to your o
 #### *Status-Code:* 
 - 400 if not all required JSON keys are sent, they have the wrong type, are out of Range or Prof/Module dont exist
 - 201 if added successfully
+
+---
+
+### **/ratings/getStars**
+
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:* 
+
+    {
+        "prof": Integer,
+        "module": Integer(Range 0-20),  //The id of the module sent when calling /users/profs/modules
+    }
+
+### ***Response:***
+
+#### *Status-Code:* 
+- 400 if not all required JSON keys are sent, they have the wrong type, are out of Range or Prof does not exist
+- 200 in any other case
+
+#### *Body:*
+    {   //Empty Object if no Ratings exist for the requested module
+        Name: String,
+        Tempo: Integer(Range 0-100),
+        Nachvollziehbarkeit: Integer(Range 0-100),
+        Anschaulichkeit: Integer(Range 0-100),
+        Interaktivität: Integer(Range 0-100),
+        Corona: Integer(Range 0-100)
+    }

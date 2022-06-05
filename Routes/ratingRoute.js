@@ -87,4 +87,55 @@ router.post("/create", (req, res) =>{
 
 });
 
+router.post("/getStars", (req, res) => {
+
+    //Session check
+
+    //Check if the request contains all necessary keys and right types
+    if(!Number.isInteger(req.body.prof) || !Number.isInteger(req.body.module)) return res.status(400).send();
+
+    if(outOfRange(req.body.module, 0, 20)) return res.status(400).send();
+
+    User.find({id: req.body.prof}).then(resultProf => {
+        if(resultProf.length != 1) return res.status(400).send();
+
+        Rating.find({prof: req.body.prof, module: req.body.module}).then(result => {
+            if(result.length == 0)  return res.status(200).json({});
+
+            
+            //Initialize Variables
+            let stars = {
+                Name: resultProf[0].modules[req.body.module],
+                Tempo: 0,
+                Nachvollziehbarkeit: 0,
+                Anschaulichkeit: 0,
+                Interaktivität: 0,
+                Corona: 0
+            };
+
+            //Add up all stars
+            //-1 to get Stars from 0 to 4: Otherwise the lowest percentage would be 25%
+            for(let i = 0; i < result.length; i++){
+                stars.Tempo += result[i].stars.Tempo-1;
+                stars.Nachvollziehbarkeit += result[i].stars.Nachvollziehbarkeit-1;
+                stars.Anschaulichkeit += result[i].stars.Anschaulichkeit-1;
+                stars.Interaktivität += result[i].stars.Interaktivität-1;
+                stars.Corona += result[i].stars.Corona-1;
+            }
+
+            //Calculate the average in percent
+            // (Sum of all stars / number of ratings) * 25: 25 because stars can be 0-4
+            stars.Tempo = Math.round(stars.Tempo / result.length * 25);
+            stars.Nachvollziehbarkeit = Math.round(stars.Nachvollziehbarkeit / result.length * 25);
+            stars.Anschaulichkeit = Math.round(stars.Anschaulichkeit / result.length * 25);
+            stars.Interaktivität = Math.round(stars.Interaktivität / result.length * 25);
+            stars.Corona = Math.round(stars.Corona / result.length * 25);
+
+            res.status(200).json(stars);
+
+        });
+    });
+
+});
+
 module.exports = router;
