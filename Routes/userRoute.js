@@ -2,11 +2,53 @@ const express = require("express");
 const router = express.Router();
 const User = require("../Models/userModel");
 
+//Removes every unnecessary Object Key
+//Meaning: Every key in keys String array in object gets copied to the new object
+function removeObjectKeys(object, keys) {
+
+    const newObject = {};
+
+    keys.forEach(item => {
+        newObject[item] = object[item];
+    });
+    
+    return newObject;
+
+}
+
+function mapResultsToReducedObjects(result){
+
+    return result.map(item => {
+        return removeObjectKeys(item, ["id", "forename", "surname", "title"]);
+    });
+
+}
+
 // Login request handling
 router.post("/login", (req, res) => {
     
     //Check if Email or Password are missing or wrong type
     if(!req.body.email || !req.body.password || typeof req.body.email != "string" || typeof req.body.password != "string")   return res.status(400).json({"authenticated": false});
+
+    //Copilot
+    // {
+    // //Create JSON Web Token
+    // const token = req.body.email + ":" + req.body.password;
+    // const tokenHash = require("crypto").createHash("sha256").update(token).digest("hex");
+
+    // //Write token to cookie
+    // res.cookie("token", tokenHash, {
+    //     maxAge: 1000 * 60 * 60 * 24 * 7,
+    //     httpOnly: true
+    // });
+
+    // //Write token to database
+    // User.findOneAndUpdate({email: req.body.email}, {token: tokenHash}, {new: true}, (err, user) => {
+    //     if(err) return res.status(500).json({"authenticated": false});
+    //     if(!user) return res.status(400).json({"authenticated": false});
+    //     return res.status(200).json({"authenticated": true});
+    // });
+    // }
 
     //Search for Database Entries with the given email, if none exist, return no authentication
     User.find({Email: req.body.email})
@@ -61,14 +103,7 @@ router.get("/profs", (req, res) => {
     User.find({id: {$exists: true}})
     .then(result => {
         
-        result.forEach(item => {
-            
-            item.password = undefined;
-            item.__v = undefined;
-            item.modules = undefined;
-            item.email = undefined;
-
-        });
+        result = mapResultsToReducedObjects(result);
         
         res.json(result);
 
@@ -122,14 +157,38 @@ router.post("/profile/view", (req, res) => {
         
         ////     WICHTIG: Eigentlich noch ein Passwortcheck, wird aber erstmal weggelassen, da später eh durch Sessions ersetzt
 
-        result[0].password = undefined;
-        result[0].__v = undefined;
-        result[0].id = undefined;
-        result[0].modules = undefined;
+        result = result.map(item => {
+            return removeObjectKeys(item, ["email", "forename", "surname"]);
+        });
         
         res.json(result);
     })
 
 })
 
-module.exports = router;
+router.post("/profile/edit", async (req, res) => {
+
+    //Check if Email or Password are missing or wrong type
+    if(typeof req.body.email != "string" || typeof req.body.forename != "string" || typeof req.body.surname != "string")   return res.status(400).send();
+    
+    if(typeof req.body.password == "string") {
+        await User.findOneAndUpdate({email: req.body.email}, {forename: req.body.forename, surname: req.body.surname, password: req.body.password}, {new: true}, (err, user) => {
+            if(err) return res.status(500).send();
+            if(!user) return res.status(400).send();
+            res.status(200).send();
+        }).clone();
+    }
+    else{
+
+        await User.findOneAndUpdate({email: req.body.email}, {forename: req.body.forename, surname: req.body.surname}, {new: true}, (err, user) => {
+            if(err) return res.status(500).send();
+            if(!user) return res.status(400).send();
+            res.status(200).send();
+        }).clone();
+
+    }
+
+})
+
+//Damit Express funktioniert, müssen beide Funktionsexporte entfernt werden
+module.exports = {router, removeObjectKeys, mapResultsToReducedObjects};

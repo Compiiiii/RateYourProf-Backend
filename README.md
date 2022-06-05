@@ -73,7 +73,6 @@ You might also need to change the dbURI String in server.js to connect to your o
 #### *Body:*
     [
         {
-            "_id": String,  //Can be ignored
             "forename": String,
             "surname": String,
             "title": String,
@@ -141,7 +140,6 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 #### *Body:*
     {
-        "_id": String //Can be ignored
         "email": String,
         "forename": String,
         "surname": String
@@ -164,7 +162,8 @@ You might also need to change the dbURI String in server.js to connect to your o
             "Tempo": Integer(Range 1 - 5),
             "Nachvollziehbarkeit": Integer(Range 1 - 5),
             "Anschaulichkeit": Integer(Range 1 - 5),
-            "Interaktivität": Integer(Range 1 - 5)
+            "Interaktivität": Integer(Range 1 - 5),
+            "Corona": Integer(Range 1-5)
         },
         //The following are optional. However, either all of them or none of them must be sent.
         "title": String(Range 1-50),

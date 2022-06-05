@@ -18,23 +18,25 @@ router.post("/create", (req, res) =>{
     //Check if the Object contains all necessary keys and right types
     if(!req.body.stars.Tempo || !req.body.stars.Nachvollziehbarkeit || !req.body.stars.Anschaulichkeit || !req.body.stars.Interaktivität || 
     typeof req.body.stars.Tempo != "number" || typeof req.body.stars.Nachvollziehbarkeit != "number" || typeof req.body.stars.Anschaulichkeit != "number" || 
-    typeof req.body.stars.Interaktivität != "number")  return res.status(400).send();
+    typeof req.body.stars.Interaktivität != "number" || typeof req.body.stars.Corona != "number")  return res.status(400).send();
     
     //Check if the Numbers in the Object are in the right range
-    if(outOfRange(req.body.stars.Tempo, 1, 5) || outOfRange(req.body.stars.Nachvollziehbarkeit, 1, 5) || outOfRange(req.body.stars.Anschaulichkeit, 1, 5) || 
-    outOfRange(req.body.stars.Interaktivität, 1, 5))    return res.status(400).send();
+    if(outOfRange(req.body.stars.Tempo, 1, 5) ||
+    outOfRange(req.body.stars.Nachvollziehbarkeit, 1, 5) || 
+    outOfRange(req.body.stars.Anschaulichkeit, 1, 5) || 
+    outOfRange(req.body.stars.Interaktivität, 1, 5) || 
+    outOfRange(req.body.stars.Corona, 1, 5))    
+    return res.status(400).send();
     
     //Check if Numbers in the Object are Integers
     if(!Number.isInteger(req.body.stars.Tempo) || !Number.isInteger(req.body.stars.Nachvollziehbarkeit) || !Number.isInteger(req.body.stars.Anschaulichkeit) ||
-    !Number.isInteger(req.body.stars.Interaktivität))   return res.status(400).send();
+    !Number.isInteger(req.body.stars.Interaktivität) || !Number.isInteger(req.body.stars.Corona))   return res.status(400).send();
     
     //Check if Module is in Range
     if(outOfRange(req.body.module, 0, 20))  return res.status(400).send();
     
     //Check if Module and Prof are Integers
     if(!Number.isInteger(req.body.module) || !Number.isInteger(req.body.prof))  return res.status(400).send();
-
-    
 
     //Check if a professor with the given id exists
     User.find({id: req.body.prof})

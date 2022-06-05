@@ -20,5 +20,5 @@ mongoose.connect(dbURI)
 .catch((err) => console.log("Could not connect to MongoDB: \n" + err));
 
 //Use Express Router 
-app.use("/users", require("./Routes/userRoute"));
+app.use("/users", require("./Routes/userRoute").router);
 app.use("/ratings", require("./Routes/ratingRoute"));
