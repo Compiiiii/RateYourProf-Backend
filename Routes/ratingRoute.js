@@ -12,7 +12,8 @@ function outOfRange(x, min, max){
 router.post("/create", (req, res) =>{
     
     //Check if the request contains all necessary keys and right types
-    if(!req.body.stars || typeof req.body.prof != "number" || typeof req.body.module != "number" || Array.isArray(req.body.stars) || typeof req.body.stars != "object")   
+    if(!req.body.stars || typeof req.body.prof != "number" || typeof req.body.module != "number" || Array.isArray(req.body.stars) || typeof req.body.stars != "object" || 
+    !Number.isSafeInteger(req.body.date))
     return res.status(400).send();
     
     //Check if the Object contains all necessary keys and right types
@@ -25,9 +26,11 @@ router.post("/create", (req, res) =>{
     outOfRange(req.body.stars.Nachvollziehbarkeit, 1, 5) || 
     outOfRange(req.body.stars.Anschaulichkeit, 1, 5) || 
     outOfRange(req.body.stars.Interaktivität, 1, 5) || 
-    outOfRange(req.body.stars.Corona, 1, 5))    
+    outOfRange(req.body.stars.Corona, 1, 5))
     return res.status(400).send();
-    
+
+    //Read Email out of JWT
+
     //Check if Numbers in the Object are Integers
     if(!Number.isInteger(req.body.stars.Tempo) || !Number.isInteger(req.body.stars.Nachvollziehbarkeit) || !Number.isInteger(req.body.stars.Anschaulichkeit) ||
     !Number.isInteger(req.body.stars.Interaktivität) || !Number.isInteger(req.body.stars.Corona))   return res.status(400).send();
@@ -58,7 +61,8 @@ router.post("/create", (req, res) =>{
                 title: req.body.title,
                 comment: req.body.comment,
                 anonymous: req.body.anonymous,
-                stars: req.body.stars
+                stars: req.body.stars,
+                date: req.body.date
             });
 
             newRating.save()
@@ -72,7 +76,8 @@ router.post("/create", (req, res) =>{
             const newRating = new Rating({
                 prof: req.body.prof,
                 module: req.body.module,
-                stars: req.body.stars
+                stars: req.body.stars,
+                date: req.body.date
             });
 
             newRating.save()
@@ -135,6 +140,40 @@ router.post("/getStars", (req, res) => {
 
         });
     });
+
+});
+
+router.post("/getComments", (req, res) => {
+
+    //Session check
+
+    //Check if the request contains all necessary keys and right types
+    if(!Number.isInteger(req.body.prof) || !Number.isInteger(req.body.module)) return res.status(400).send();
+
+    if(outOfRange(req.body.module, 0, 20)) return res.status(400).send();
+
+    //Dont forget to return Name of email adress when JWT are implemented
+    User.find({id: req.body.prof}).then(resultProf => {
+        if(resultProf.length != 1) return res.status(400).send();
+
+        Rating.find({prof: req.body.prof, module: req.body.module, comment: {$exists: true}}).then(result => {
+            if(result.length == 0)  return res.status(200).json([]);
+
+            let comments = [];
+            for(let i = 0; i < result.length; i++){
+                comments.push({
+                    title: result[i].title,
+                    comment: result[i].comment,
+                    name: result[i].anonymous ? "" : resultProf[0].email,
+                    date: result[i].date
+                });
+            }
+
+            res.status(200).json(comments);
+
+        });
+    });
+
 
 });
 

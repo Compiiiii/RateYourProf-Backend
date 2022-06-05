@@ -188,6 +188,7 @@ You might also need to change the dbURI String in server.js to connect to your o
             "Interaktivität": Integer(Range 1 - 5),
             "Corona": Integer(Range 1-5)
         },
+        "date": Integer(Unix Time),
         //The following are optional. However, either all of them or none of them must be sent.
         "title": String(Length 1-50),
         "comment": String(Length 1-2000),
@@ -230,3 +231,34 @@ You might also need to change the dbURI String in server.js to connect to your o
         Interaktivität: Integer(Range 0-100),
         Corona: Integer(Range 0-100)
     }
+
+---
+
+### **/ratings/getComments**
+
+### ***Request:***
+
+#### *HTTP-Method:* Post
+
+#### *Body:* 
+
+    {
+        "prof": Integer,
+        "module": Integer(Range 0-20),  //The id of the module sent when calling /users/profs/modules
+    }
+
+### ***Response:***
+
+#### *Status-Code:* 
+- 400 if not all required JSON keys are sent, they have the wrong type, are out of Range or Prof does not exist
+- 200 in any other case
+
+#### *Body:*
+    [//Empty Array if no Comments exist for the requested module
+        {
+            title: String,
+            comment: String,
+            name: String, //Empty String if anonymous was set to true on creation of the request
+            date: Integer(Unix Time)
+        }
+    ]
