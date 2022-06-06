@@ -204,8 +204,8 @@ You might also need to change the dbURI String in server.js to connect to your o
             "Corona": Integer(Range 1-5)
         },
         "date": Integer(Unix Time),
-        "anonymous": Boolean,
         //The following are optional. However, either all of them or none of them must be sent.
+        "anonymous": Boolean,
         "title": String(Length 1-50),
         "comment": String(Length 1-2000),
     }

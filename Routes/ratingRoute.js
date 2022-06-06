@@ -14,7 +14,7 @@ router.post("/create", authenticateToken, (req, res) =>{
     
     //Check if the request contains all necessary keys and right types
     if(Number.isInteger(req.body.prof) || Number.isInteger(req.body.module) || Array.isArray(req.body.stars) || typeof req.body.stars != "object" || 
-    !Number.isSafeInteger(req.body.date) || typeof req.body.anonymous != "boolean") return res.sendStatus(400);
+    !Number.isSafeInteger(req.body.date)) return res.sendStatus(400);
     
     //Check if Numbers in the Object are Integers
     if(!Number.isInteger(req.body.stars.Tempo) || !Number.isInteger(req.body.stars.Nachvollziehbarkeit) || !Number.isInteger(req.body.stars.Anschaulichkeit) ||
@@ -41,10 +41,10 @@ router.post("/create", authenticateToken, (req, res) =>{
         if(result.length == 0) return res.status(400).send();
         
         //If rating was submitted with comment or title
-        if(typeof req.body.title == "string" || typeof req.body.comment == "string"){
+        if(typeof req.body.title == "string" || typeof req.body.comment == "string" || typeof req.body.anonymous == "boolean"){
             
             //If one of these three is present, all have to be present and they have to be the right type
-            if(typeof req.body.title != "string" || typeof req.body.comment != "string") return res.sendStatus(400);
+            if(typeof req.body.title != "string" || typeof req.body.comment != "string" || typeof req.body.anonymous != "boolean") return res.sendStatus(400);
             
             //Check if Comment or title are longer than the maximum length
             if(outOfRange(req.body.comment.length, 1, 2000) || outOfRange(req.body.title.length, 1, 50)) return res.sendStatus(400);
@@ -76,29 +76,22 @@ router.post("/create", authenticateToken, (req, res) =>{
 
 
         }else{
-            
-            //Search User to add Name
-            User.find({email: req.email}).then(user => {
 
-                if(user.length != 1) return res.sendStatus(400);
+            //If no comment or title is present, just save the rating
+            const newRating = new Rating({
+                prof: req.body.prof,
+                module: req.body.module,
+                stars: req.body.stars,
+                date: req.body.date,
+                authorEmail: req.email,
+            });
 
-                const newRating = new Rating({
-                    prof: req.body.prof,
-                    module: req.body.module,
-                    anonymous: req.body.anonymous,
-                    stars: req.body.stars,
-                    date: req.body.date,
-                    authorEmail: req.email,
-                    authorName: user[0].forename + " " + user[0].surname
-                });
-    
-                newRating.save()
-                .then(result => {
-                    res.sendStatus(201);
-                })
-                .catch(err => res.status(500).send(err));
+            newRating.save()
+            .then(result => {
+                res.sendStatus(201);
+            })
+            .catch(err => res.status(500).send(err));
 
-            }).catch(err => res.status(500).send(err));
 
         }
     })
