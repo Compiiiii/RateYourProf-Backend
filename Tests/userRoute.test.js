@@ -1,7 +1,7 @@
 const { removeObjectKeys, mapResultsToReducedObjects } = require("../Routes/userRoute");
 const mongoose = require("mongoose");
-const config = require("../config");
 const User = require("../Models/userModel");
+const config = require("dotenv").config;
 
 test("Should only keep all given Object keys", () => {
 
@@ -74,7 +74,11 @@ test("Should map all objects in result to the new object returned by removeObjec
 //Tests whether all returned objects are reduced to the given keys
 test("Should connect to the database and return the desired results", async () => {
 
-    const dbURI = `mongodb+srv://${config.user}:${config.password}@cluster0.idco2.mongodb.net/RateYourProf?retryWrites=true&w=majority`
+    //Load Environment Variables
+    config();
+
+    //Connect to the database
+    const dbURI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.idco2.mongodb.net/RateYourProf?retryWrites=true&w=majority`
     await mongoose.connect(dbURI);
     
     let result = await User.find({id: {$exists: true}})

@@ -1,6 +1,6 @@
 # How to use
 
-To use, you need to change the name of config.js.example to config.js and replace username and password with valid credentials
+To use, you need to change the name of .env.example to .env and replace username, password and the JWT-Secret with valid values.
 You might also need to change the dbURI String in server.js to connect to your own Database
 
 ---
@@ -26,11 +26,12 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 #### *Status-Code:* 
 - 400 if not all required JSON keys are sent or have the wrong type
-- 200 in any other case
+- 401 if login failed
+- 200 if login succeeded
 
-#### *Body:*
+#### *Body(Only if Status is 200):*
     {
-        "authenticated": Boolean
+        "jwt": String(JSON Web Token)
     }
 
 ---
@@ -55,8 +56,14 @@ You might also need to change the dbURI String in server.js to connect to your o
 #### *Status-Code:* 
 
 - 400 if not all required JSON keys are sent or have the wrong type
-- 200 if "email" already exists
+- 401 if email already exists
 - 201 if added successfully
+
+#### *Body(Only if Status is 201):* 
+
+    {
+        "jwt": String(JSON Web Token)
+    }
 
 ---
 
@@ -66,9 +73,14 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 #### *HTTP-Method:* Get
 
+#### *Header:* Authorization: "Bearer **JWT**"
+
 ### ***Response:***
 
-#### *Status-Code:* 200
+#### *Status-Code:* 
+- 401 if JWT is missing
+- 403 if JWT is invalid
+- 200 in any other case
 
 #### *Body:*
     [
@@ -92,17 +104,19 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 #### *HTTP-Method:* Post
 
+#### *Header:* Authorization: "Bearer **JWT**"
+
 #### *Body:*
 
     {
-        "email": String,
-        "password": String,
         "prof": Integer
     }
 
 ### ***Response:***
 
 #### *Status-Code:*
+- 401 if JWT is missing
+- 403 if JWT is invalid
 - 400 if not all required JSON keys are sent, they have the wrong type, or the Prof-ID does not exist
 - 200 in any other case
 
@@ -123,19 +137,15 @@ You might also need to change the dbURI String in server.js to connect to your o
  
 ### ***Request:***
 
-#### *HTTP-Method:* Post
+#### *HTTP-Method:* Get
 
-#### *Body:* 
-
-    {
-        "email": String,
-        "password": String
-    }
+#### *Header:* Authorization: "Bearer **JWT**"
 
 ### ***Response:***
 
 #### *Status-Code:* 
-- 400 if not all required JSON keys are sent or have the wrong type
+- 401 if JWT is missing
+- 403 if JWT is invalid
 - 200 in any other case
 
 #### *Body:*
@@ -151,12 +161,13 @@ You might also need to change the dbURI String in server.js to connect to your o
  
 ### ***Request:***
 
-#### *HTTP-Method:* Post
+#### *HTTP-Method:* Put
+
+#### *Header:* Authorization: "Bearer **JWT**"
 
 #### *Body:* 
 
     {
-        "email": String,
         "forename": String,
         "surname": String,
         "password": String  //Optional: Only send when password was changed
@@ -165,6 +176,8 @@ You might also need to change the dbURI String in server.js to connect to your o
 ### ***Response:***
 
 #### *Status-Code:* 
+- 401 if JWT is missing
+- 403 if JWT is invalid
 - 400 if not all required JSON keys are sent or have the wrong type
 - 200 if the profile was changed successfully
 
@@ -175,6 +188,8 @@ You might also need to change the dbURI String in server.js to connect to your o
 ### ***Request:***
 
 #### *HTTP-Method:* Post
+
+#### *Header:* Authorization: "Bearer **JWT**"
 
 #### *Body:* 
 
@@ -189,15 +204,17 @@ You might also need to change the dbURI String in server.js to connect to your o
             "Corona": Integer(Range 1-5)
         },
         "date": Integer(Unix Time),
+        "anonymous": Boolean,
         //The following are optional. However, either all of them or none of them must be sent.
         "title": String(Length 1-50),
         "comment": String(Length 1-2000),
-        "anonymous": Boolean
     }
 
 ### ***Response:***
 
 #### *Status-Code:* 
+- 401 if JWT is missing
+- 403 if JWT is invalid
 - 400 if not all required JSON keys are sent, they have the wrong type, are out of Range or Prof/Module dont exist
 - 201 if added successfully
 
@@ -209,16 +226,20 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 #### *HTTP-Method:* Post
 
+#### *Header:* Authorization: "Bearer **JWT**"
+
 #### *Body:* 
 
     {
         "prof": Integer,
-        "module": Integer(Range 0-20),  //The id of the module sent when calling /users/profs/modules
+        "module": Integer(Range 0-20),  //The id of the module received when calling /users/profs/modules
     }
 
 ### ***Response:***
 
 #### *Status-Code:* 
+- 401 if JWT is missing
+- 403 if JWT is invalid
 - 400 if not all required JSON keys are sent, they have the wrong type, are out of Range or Prof does not exist
 - 200 in any other case
 
@@ -240,6 +261,8 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 #### *HTTP-Method:* Post
 
+#### *Header:* Authorization: "Bearer **JWT**"
+
 #### *Body:* 
 
     {
@@ -249,7 +272,9 @@ You might also need to change the dbURI String in server.js to connect to your o
 
 ### ***Response:***
 
-#### *Status-Code:* 
+#### *Status-Code:*
+- 401 if JWT is missing
+- 403 if JWT is invalid
 - 400 if not all required JSON keys are sent, they have the wrong type, are out of Range or Prof does not exist
 - 200 in any other case
 
@@ -258,7 +283,7 @@ You might also need to change the dbURI String in server.js to connect to your o
         {
             title: String,
             comment: String,
-            name: String, //Empty String if anonymous was set to true on creation of the request
+            name: String, //Empty String if anonymous was set to true on creation of the request//Does not exist if anonymous is false but rating was created before JWT were impelemented
             date: Integer(Unix Time)
         }
     ]
