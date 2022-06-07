@@ -30,7 +30,7 @@ router.post("/create", authenticateToken, (req, res) =>{
     
     //Check if date is in the future
     //-1000 because of possible unsynchronized time
-    if(req.body.date-1000 > Date.now())   return res.sendStatus(400);
+    if(req.body.date-1000 > Math.round(Date.now()/1000))   return res.sendStatus(400);
     
     //Check if Module is in Range
     if(outOfRange(req.body.module, 0, 20))  return res.sendStatus(400);
