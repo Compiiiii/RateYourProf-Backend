@@ -51,7 +51,7 @@ router.post("/create", authenticateToken, (req, res) =>{
 
             //Search User to add Name
             User.find({email: req.email}).then(user => {
-                console.log("test");
+                
                 if(user.length != 1) return res.sendStatus(400);
 
                 const newRating = new Rating({
@@ -65,13 +65,13 @@ router.post("/create", authenticateToken, (req, res) =>{
                     authorEmail: req.email,
                     authorName: user[0].forename + " " + user[0].surname
                 });
-                console.log("test");
+                
                 newRating.save()
                 .then(result => {
                     res.sendStatus(201);
                 })
                 .catch(err => res.status(500).send(err));
-                console.log("test");
+                
             }).catch(err => res.status(500).send(err));
 
 
