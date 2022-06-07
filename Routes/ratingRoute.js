@@ -13,7 +13,7 @@ function outOfRange(x, min, max){
 router.post("/create", authenticateToken, (req, res) =>{
     
     //Check if the request contains all necessary keys and right types
-    if(Number.isInteger(req.body.prof) || Number.isInteger(req.body.module) || Array.isArray(req.body.stars) || typeof req.body.stars != "object" || 
+    if(!Number.isInteger(req.body.prof) || !Number.isInteger(req.body.module) || Array.isArray(req.body.stars) || typeof req.body.stars != "object" || 
     !Number.isSafeInteger(req.body.date)) return res.sendStatus(400);
     
     //Check if Numbers in the Object are Integers
@@ -27,14 +27,14 @@ router.post("/create", authenticateToken, (req, res) =>{
     outOfRange(req.body.stars.Interaktivität, 1, 5) || 
     outOfRange(req.body.stars.Corona, 1, 5))
     return res.sendStatus(400);
-
+    
     //Check if date is in the future
     //-1000 because of possible unsynchronized time
-    if(req.body.date > Date.now()-1000)   return res.sendStatus(400);
+    if(req.body.date-1000 > Date.now())   return res.sendStatus(400);
     
     //Check if Module is in Range
     if(outOfRange(req.body.module, 0, 20))  return res.sendStatus(400);
-
+    
     //Check if a professor with the given id exists
     User.find({id: req.body.prof})
     .then(result => {
