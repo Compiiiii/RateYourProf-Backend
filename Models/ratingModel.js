@@ -25,6 +25,18 @@ const ratingSchema = new Schema({
     stars: {
         type: Object,
         required: true
+    },
+    date: {
+        type: Number,
+        required: true
+    },
+    authorEmail: {
+        type: String,
+        required: true
+    },
+    authorName: {
+        type: String,
+        required: false
     }
 
 });
