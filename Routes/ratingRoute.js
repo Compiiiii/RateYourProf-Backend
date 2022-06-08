@@ -41,7 +41,7 @@ router.post("/create", authenticateToken, (req, res) =>{
         if(result.length == 0) return res.status(400).send();
         
         //If rating was submitted with comment or title
-        if(typeof req.body.title == "string" || typeof req.body.comment == "string" || typeof req.body.anonymous == "boolean"){
+        if((typeof req.body.title == "string" && req.body.title != "" || typeof req.body.comment == "string" && req.body.comment != "") && typeof req.body.anonymous == "boolean"){
             
             //If one of these three is present, all have to be present and they have to be the right type
             if(typeof req.body.title != "string" || typeof req.body.comment != "string" || typeof req.body.anonymous != "boolean") return res.sendStatus(400);
@@ -123,6 +123,8 @@ router.post("/getStars", authenticateToken, (req, res) => {
                 Interaktivität: 0,
                 Corona: 0
             };
+            console.log(stars.Tempo);
+            console.log(stars.Corona);
 
             //Add up all stars
             //-1 to get Stars from 0 to 4: Otherwise the lowest percentage would be 25%
@@ -131,7 +133,7 @@ router.post("/getStars", authenticateToken, (req, res) => {
                 stars.Nachvollziehbarkeit += result[i].stars.Nachvollziehbarkeit-1;
                 stars.Anschaulichkeit += result[i].stars.Anschaulichkeit-1;
                 stars.Interaktivität += result[i].stars.Interaktivität-1;
-                stars.Corona += result[i].stars.Corona-1;
+                stars.Corona += result[i].stars.Corona-1 ? result[i].stars.Corona-1 : 0;
             }
 
             //Calculate the average in percent
