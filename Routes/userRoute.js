@@ -106,11 +106,11 @@ router.post("/profs/modules", authenticateToken, (req, res) => {
 
     //Check if Prof is number
     if(!Number.isInteger(req.body.prof))   return res.sendStatus(400);
-
+    
     //Search for Prof with that ID
     User.find({id: req.body.prof})
     .then(result => {
-
+        
         //Check if one Prof was found
         if(result.length != 1)  return res.sendStatus(400);
 
