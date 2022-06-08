@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../Models/userModel");
 const jwt = require("jsonwebtoken");
 const {authenticateToken} = require("../Middleware/authentication")
+const bcrypt = require("bcrypt");
 
 //Removes every unnecessary Object Key
 //Meaning: Every key in keys String array in object gets copied to the new object
@@ -36,8 +37,9 @@ router.post("/login", (req, res) => {
     User.find({email: req.body.email})
     .then(result => {
         if(result.length != 1) return res.sendStatus(401);
+        
         //Check if password is right
-        if(result[0].password === req.body.password){
+        if(bcrypt.compareSync(req.body.password, result[0].password)){
             //Create JWT with email
             const token = jwt.sign({email: result[0].email}, process.env.JWT_SECRET);
 
@@ -54,21 +56,23 @@ router.post("/create", (req, res) => {
 
     //Check if the request contains all necessary elements and correct types
     if(typeof req.body.email != "string" || typeof req.body.password != "string" || typeof req.body.forename != "string" || typeof req.body.surname != "string") return res.sendStatus(400);
-
+    
     //Check whether the given Email Adress already exists
-    User.find({Email: req.body.email})
+    User.find({email: req.body.email})
     .then(result => {
 
         if(result.length != 0)  return res.sendStatus(401);
 
         //Create new User
-        //Hash Password
         const newUser = new User({
             email: req.body.email,
-            password: req.body.password,
+            password: req.body.password,//createHash(req.body.password),
             forename: req.body.forename,
             surname: req.body.surname
         });
+        //Notwendig, da modules einfach so geaddet wird
+        newUser.modules = undefined;
+
         newUser.save()
         .then(result2 => {
             //Create JWT with email
