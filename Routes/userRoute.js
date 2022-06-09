@@ -152,7 +152,7 @@ router.put("/profile/edit", authenticateToken, async (req, res) => {
     if(typeof req.body.forename != "string" || typeof req.body.surname != "string")   return res.sendStatus(400);
     
     if(typeof req.body.password == "string" && req.body.password.length != 0) {
-        await User.findOneAndUpdate({email: req.email}, {forename: req.body.forename, surname: req.body.surname, password: req.body.password}, {new: true}, (err, user) => {
+        await User.findOneAndUpdate({email: req.email}, {forename: req.body.forename, surname: req.body.surname, password: bcrypt.hashSync(req.body.password, 10)}, {new: true}, (err, user) => {
             if(err) return res.status(500).send(err);
             if(!user) return res.sendStatus(400);
             return res.sendStatus(200);
